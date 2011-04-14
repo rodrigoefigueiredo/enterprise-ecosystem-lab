@@ -18,5 +18,7 @@ public class Pbkdf2PasswordHasherTest {
         assertThat(hasher.algorithm(), is("PBKDF2WithHmacSHA1"));
         assertThat(firstHash, not("changeit123"));
         assertThat(firstHash, not(secondHash));
+        assertThat(hasher.matches("changeit123", firstHash), is(true));
+        assertThat(hasher.matches("wrong-password", firstHash), is(false));
     }
 }

@@ -9,7 +9,7 @@
            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
   <context:property-placeholder location="classpath:application.properties"/>
-  <context:component-scan base-package="com.enterpriseecosystem.identity.audit,com.enterpriseecosystem.identity.credential,com.enterpriseecosystem.identity.identity"/>
+  <context:component-scan base-package="com.enterpriseecosystem.identity.audit,com.enterpriseecosystem.identity.authentication,com.enterpriseecosystem.identity.credential,com.enterpriseecosystem.identity.identity"/>
 
   <tx:annotation-driven transaction-manager="transactionManager"/>
 

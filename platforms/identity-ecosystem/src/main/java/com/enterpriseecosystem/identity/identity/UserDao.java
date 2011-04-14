@@ -2,6 +2,7 @@ package com.enterpriseecosystem.identity.identity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.NoResultException;
 
 import org.springframework.stereotype.Repository;
 
@@ -21,5 +22,16 @@ public class UserDao {
                 .setParameter("email", email)
                 .getSingleResult();
         return count.longValue() > 0L;
+    }
+
+    public User findByEmail(String email) {
+        try {
+            return (User) entityManager
+                    .createQuery("select u from User u where u.email = :email")
+                    .setParameter("email", email)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }

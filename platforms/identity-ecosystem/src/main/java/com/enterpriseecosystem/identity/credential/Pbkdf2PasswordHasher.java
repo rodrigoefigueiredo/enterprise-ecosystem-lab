@@ -27,14 +27,51 @@ public class Pbkdf2PasswordHasher implements PasswordHasher {
             byte[] salt = new byte[SALT_BYTES];
             secureRandom.nextBytes(salt);
 
-            PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITERATIONS, KEY_LENGTH_BITS);
-            SecretKeyFactory factory = SecretKeyFactory.getInstance(ALGORITHM);
-            byte[] hash = factory.generateSecret(spec).getEncoded();
+            byte[] hash = pbkdf2(password, salt, ITERATIONS);
 
             return ITERATIONS + ":" + DatatypeConverter.printBase64Binary(salt)
                     + ":" + DatatypeConverter.printBase64Binary(hash);
         } catch (Exception e) {
             throw new IllegalStateException("Could not hash password", e);
         }
+    }
+
+    public boolean matches(String password, String storedHash) {
+        try {
+            String[] parts = storedHash.split(":");
+            if (parts.length != 3) {
+                return false;
+            }
+
+            int iterations = Integer.parseInt(parts[0]);
+            byte[] salt = DatatypeConverter.parseBase64Binary(parts[1]);
+            byte[] expectedHash = DatatypeConverter.parseBase64Binary(parts[2]);
+            byte[] actualHash = pbkdf2(password, salt, iterations);
+
+            return constantTimeEquals(expectedHash, actualHash);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private byte[] pbkdf2(String password, byte[] salt, int iterations) throws Exception {
+        PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, KEY_LENGTH_BITS);
+        SecretKeyFactory factory = SecretKeyFactory.getInstance(ALGORITHM);
+        return factory.generateSecret(spec).getEncoded();
+    }
+
+    private boolean constantTimeEquals(byte[] expected, byte[] actual) {
+        if (expected == null || actual == null) {
+            return false;
+        }
+
+        int diff = expected.length ^ actual.length;
+        int max = Math.max(expected.length, actual.length);
+        for (int i = 0; i < max; i++) {
+            byte expectedByte = i < expected.length ? expected[i] : 0;
+            byte actualByte = i < actual.length ? actual[i] : 0;
+            diff |= expectedByte ^ actualByte;
+        }
+        return diff == 0;
     }
 }
