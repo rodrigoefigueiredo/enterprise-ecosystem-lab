@@ -8,6 +8,7 @@
 <body>
   <h1>Identity Ecosystem</h1>
   <p>Legacy Java 6 baseline is running on Spring MVC.</p>
+  <p><a href="login">Sign in</a></p>
   <p><a href="me">Protected page</a></p>
   <p><a href="users/new">Create user</a></p>
 </body>

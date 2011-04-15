@@ -8,5 +8,6 @@
 <body>
   <h1>Authenticated Area</h1>
   <p>The Spring Security filter chain is active.</p>
+  <p><a href="logout">Sign out</a></p>
 </body>
 </html>

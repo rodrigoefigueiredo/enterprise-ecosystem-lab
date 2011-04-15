@@ -41,19 +41,39 @@ public class AuditEvent {
         this.eventType = eventType;
     }
 
+    public String getEventType() {
+        return eventType;
+    }
+
     public void setSubjectType(String subjectType) {
         this.subjectType = subjectType;
+    }
+
+    public String getSubjectType() {
+        return subjectType;
     }
 
     public void setSubjectId(String subjectId) {
         this.subjectId = subjectId;
     }
 
+    public String getSubjectId() {
+        return subjectId;
+    }
+
     public void setOccurredAt(Date occurredAt) {
         this.occurredAt = occurredAt;
     }
 
+    public Date getOccurredAt() {
+        return occurredAt;
+    }
+
     public void setOutcome(String outcome) {
         this.outcome = outcome;
+    }
+
+    public String getOutcome() {
+        return outcome;
     }
 }
