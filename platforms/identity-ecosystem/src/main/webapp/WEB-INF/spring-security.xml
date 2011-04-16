@@ -10,6 +10,8 @@
     <intercept-url pattern="/" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
     <intercept-url pattern="/index.jsp" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
     <intercept-url pattern="/login" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+    <intercept-url pattern="/users/new" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+    <intercept-url pattern="/users" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
     <intercept-url pattern="/resources/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
     <intercept-url pattern="/**" access="ROLE_USER"/>
     <form-login login-page="/login"
@@ -28,10 +30,5 @@
 
   <authentication-manager>
     <authentication-provider ref="databaseAuthenticationProvider"/>
-    <authentication-provider>
-      <user-service>
-        <user name="admin" password="admin" authorities="ROLE_USER"/>
-      </user-service>
-    </authentication-provider>
   </authentication-manager>
 </beans:beans>

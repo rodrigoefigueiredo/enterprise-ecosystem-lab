@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 public class AuditingLogoutSuccessHandlerTest {
 
     @Test
-    public void logoutRecordsAuditEventAndRedirectsToLogin() throws Exception {
+    public void logoutRecordsSessionAndLogoutEventsAndRedirectsToLogin() throws Exception {
         AuthenticationAuditService auditService = mock(AuthenticationAuditService.class);
         AuditingLogoutSuccessHandler handler = new AuditingLogoutSuccessHandler(auditService);
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -24,6 +24,7 @@ public class AuditingLogoutSuccessHandlerTest {
 
         handler.onLogoutSuccess(request, response, authentication);
 
+        verify(auditService).record("SESSION_REVOKED", authentication, "SUCCESS");
         verify(auditService).record("LOGOUT_SUCCEEDED", authentication, "SUCCESS");
         verify(response).sendRedirect("/identity-ecosystem/login?logout=true");
     }

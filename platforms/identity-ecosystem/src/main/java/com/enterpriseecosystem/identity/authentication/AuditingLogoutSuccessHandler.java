@@ -24,6 +24,7 @@ public class AuditingLogoutSuccessHandler implements LogoutSuccessHandler {
     public void onLogoutSuccess(HttpServletRequest request,
                                 HttpServletResponse response,
                                 Authentication authentication) throws IOException, ServletException {
+        auditService.record("SESSION_REVOKED", authentication, "SUCCESS");
         auditService.record("LOGOUT_SUCCEEDED", authentication, "SUCCESS");
         response.sendRedirect(request.getContextPath() + "/login?logout=true");
     }

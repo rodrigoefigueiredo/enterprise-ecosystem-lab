@@ -20,6 +20,7 @@ public class AuthenticationAuditListener implements ApplicationListener<Abstract
     public void onApplicationEvent(AbstractAuthenticationEvent event) {
         if (event instanceof AuthenticationSuccessEvent) {
             auditService.record("AUTHENTICATION_SUCCEEDED", event.getAuthentication(), "SUCCESS");
+            auditService.record("SESSION_CREATED", event.getAuthentication(), "SUCCESS");
         } else if (event instanceof AbstractAuthenticationFailureEvent) {
             auditService.record("AUTHENTICATION_FAILED", event.getAuthentication(), "FAILURE");
         }

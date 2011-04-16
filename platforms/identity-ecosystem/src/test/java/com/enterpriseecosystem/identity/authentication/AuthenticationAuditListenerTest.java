@@ -13,7 +13,7 @@ import static org.mockito.Mockito.verify;
 public class AuthenticationAuditListenerTest {
 
     @Test
-    public void authenticationSuccessRecordsCanonicalEventName() {
+    public void authenticationSuccessRecordsAuthenticationAndSessionEvents() {
         AuthenticationAuditService auditService = mock(AuthenticationAuditService.class);
         AuthenticationAuditListener listener = new AuthenticationAuditListener(auditService);
         Authentication authentication = new UsernamePasswordAuthenticationToken("user@example.com", "ignored");
@@ -21,6 +21,7 @@ public class AuthenticationAuditListenerTest {
         listener.onApplicationEvent(new AuthenticationSuccessEvent(authentication));
 
         verify(auditService).record("AUTHENTICATION_SUCCEEDED", authentication, "SUCCESS");
+        verify(auditService).record("SESSION_CREATED", authentication, "SUCCESS");
     }
 
     @Test
