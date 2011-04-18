@@ -14,18 +14,18 @@ import org.springframework.stereotype.Component;
 @Component("auditingLogoutSuccessHandler")
 public class AuditingLogoutSuccessHandler implements LogoutSuccessHandler {
 
-    private final AuthenticationAuditService auditService;
+    private final AuthenticationAuditRecorder auditRecorder;
 
     @Autowired
-    public AuditingLogoutSuccessHandler(AuthenticationAuditService auditService) {
-        this.auditService = auditService;
+    public AuditingLogoutSuccessHandler(AuthenticationAuditRecorder auditRecorder) {
+        this.auditRecorder = auditRecorder;
     }
 
     public void onLogoutSuccess(HttpServletRequest request,
                                 HttpServletResponse response,
                                 Authentication authentication) throws IOException, ServletException {
-        auditService.record("SESSION_REVOKED", authentication, "SUCCESS");
-        auditService.record("LOGOUT_SUCCEEDED", authentication, "SUCCESS");
+        auditRecorder.record("SESSION_REVOKED", authentication, "SUCCESS");
+        auditRecorder.record("LOGOUT_SUCCEEDED", authentication, "SUCCESS");
         response.sendRedirect(request.getContextPath() + "/login?logout=true");
     }
 }

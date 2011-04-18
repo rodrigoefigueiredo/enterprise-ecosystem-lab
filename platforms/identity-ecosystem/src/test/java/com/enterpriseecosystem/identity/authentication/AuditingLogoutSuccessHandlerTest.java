@@ -15,8 +15,8 @@ public class AuditingLogoutSuccessHandlerTest {
 
     @Test
     public void logoutRecordsSessionAndLogoutEventsAndRedirectsToLogin() throws Exception {
-        AuthenticationAuditService auditService = mock(AuthenticationAuditService.class);
-        AuditingLogoutSuccessHandler handler = new AuditingLogoutSuccessHandler(auditService);
+        AuthenticationAuditRecorder auditRecorder = mock(AuthenticationAuditRecorder.class);
+        AuditingLogoutSuccessHandler handler = new AuditingLogoutSuccessHandler(auditRecorder);
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         Authentication authentication = new UsernamePasswordAuthenticationToken("user@example.com", "ignored");
@@ -24,8 +24,8 @@ public class AuditingLogoutSuccessHandlerTest {
 
         handler.onLogoutSuccess(request, response, authentication);
 
-        verify(auditService).record("SESSION_REVOKED", authentication, "SUCCESS");
-        verify(auditService).record("LOGOUT_SUCCEEDED", authentication, "SUCCESS");
+        verify(auditRecorder).record("SESSION_REVOKED", authentication, "SUCCESS");
+        verify(auditRecorder).record("LOGOUT_SUCCEEDED", authentication, "SUCCESS");
         verify(response).sendRedirect("/identity-ecosystem/login?logout=true");
     }
 }

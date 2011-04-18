@@ -18,13 +18,19 @@ public class CreateUserServiceTest {
     public void createsActiveUserWithNormalizedEmail() {
         UserDao userDao = mock(UserDao.class);
         PasswordCredentialDao credentialDao = mock(PasswordCredentialDao.class);
+        UserAuthorityDao userAuthorityDao = mock(UserAuthorityDao.class);
         AuditEventDao auditEventDao = mock(AuditEventDao.class);
         PasswordHasher passwordHasher = mock(PasswordHasher.class);
         when(userDao.emailExists("alice@example.com")).thenReturn(false);
         when(passwordHasher.hash("changeit123")).thenReturn("hashed-password");
         when(passwordHasher.algorithm()).thenReturn("PBKDF2WithHmacSHA1");
 
-        CreateUserService service = new CreateUserService(userDao, credentialDao, auditEventDao, passwordHasher);
+        CreateUserService service = new CreateUserService(
+                userDao,
+                credentialDao,
+                userAuthorityDao,
+                auditEventDao,
+                passwordHasher);
 
         User user = service.create(new CreateUserRequest(" Alice@Example.com ", "Alice", "changeit123"));
 
@@ -32,6 +38,7 @@ public class CreateUserServiceTest {
         assertThat(user.getDisplayName(), is("Alice"));
         assertThat(user.getStatus(), is("ACTIVE"));
         verify(userDao).save(user);
+        verify(userAuthorityDao).grant(user, "ROLE_USER");
     }
 
     @Test(expected = DuplicateEmailException.class)
@@ -42,6 +49,7 @@ public class CreateUserServiceTest {
         CreateUserService service = new CreateUserService(
                 userDao,
                 mock(PasswordCredentialDao.class),
+                mock(UserAuthorityDao.class),
                 mock(AuditEventDao.class),
                 mock(PasswordHasher.class));
 

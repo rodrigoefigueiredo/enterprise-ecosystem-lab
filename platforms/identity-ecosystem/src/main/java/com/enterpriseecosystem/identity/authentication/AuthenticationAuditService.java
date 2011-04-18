@@ -11,7 +11,7 @@ import com.enterpriseecosystem.identity.audit.AuditEvent;
 import com.enterpriseecosystem.identity.audit.AuditEventDao;
 
 @Service
-public class AuthenticationAuditService {
+public class AuthenticationAuditService implements AuthenticationAuditRecorder {
 
     private final AuditEventDao auditEventDao;
 

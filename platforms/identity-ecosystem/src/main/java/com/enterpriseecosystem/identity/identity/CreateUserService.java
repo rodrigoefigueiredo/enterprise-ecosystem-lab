@@ -19,16 +19,19 @@ public class CreateUserService implements CreateUserUseCase {
 
     private final UserDao userDao;
     private final PasswordCredentialDao passwordCredentialDao;
+    private final UserAuthorityDao userAuthorityDao;
     private final AuditEventDao auditEventDao;
     private final PasswordHasher passwordHasher;
 
     @Autowired
     public CreateUserService(UserDao userDao,
                              PasswordCredentialDao passwordCredentialDao,
+                             UserAuthorityDao userAuthorityDao,
                              AuditEventDao auditEventDao,
                              PasswordHasher passwordHasher) {
         this.userDao = userDao;
         this.passwordCredentialDao = passwordCredentialDao;
+        this.userAuthorityDao = userAuthorityDao;
         this.auditEventDao = auditEventDao;
         this.passwordHasher = passwordHasher;
     }
@@ -57,6 +60,8 @@ public class CreateUserService implements CreateUserUseCase {
         credential.setCreatedAt(now);
         credential.setActive(true);
         passwordCredentialDao.save(credential);
+
+        userAuthorityDao.grant(user, "ROLE_USER");
 
         AuditEvent event = new AuditEvent();
         event.setEventType("USER_CREATED");

@@ -14,26 +14,26 @@ public class AuthenticationAuditListenerTest {
 
     @Test
     public void authenticationSuccessRecordsAuthenticationAndSessionEvents() {
-        AuthenticationAuditService auditService = mock(AuthenticationAuditService.class);
-        AuthenticationAuditListener listener = new AuthenticationAuditListener(auditService);
+        AuthenticationAuditRecorder auditRecorder = mock(AuthenticationAuditRecorder.class);
+        AuthenticationAuditListener listener = new AuthenticationAuditListener(auditRecorder);
         Authentication authentication = new UsernamePasswordAuthenticationToken("user@example.com", "ignored");
 
         listener.onApplicationEvent(new AuthenticationSuccessEvent(authentication));
 
-        verify(auditService).record("AUTHENTICATION_SUCCEEDED", authentication, "SUCCESS");
-        verify(auditService).record("SESSION_CREATED", authentication, "SUCCESS");
+        verify(auditRecorder).record("AUTHENTICATION_SUCCEEDED", authentication, "SUCCESS");
+        verify(auditRecorder).record("SESSION_CREATED", authentication, "SUCCESS");
     }
 
     @Test
     public void authenticationFailureRecordsCanonicalEventName() {
-        AuthenticationAuditService auditService = mock(AuthenticationAuditService.class);
-        AuthenticationAuditListener listener = new AuthenticationAuditListener(auditService);
+        AuthenticationAuditRecorder auditRecorder = mock(AuthenticationAuditRecorder.class);
+        AuthenticationAuditListener listener = new AuthenticationAuditListener(auditRecorder);
         Authentication authentication = new UsernamePasswordAuthenticationToken("user@example.com", "ignored");
 
         listener.onApplicationEvent(new AuthenticationFailureBadCredentialsEvent(
                 authentication,
                 new BadCredentialsException("Bad credentials")));
 
-        verify(auditService).record("AUTHENTICATION_FAILED", authentication, "FAILURE");
+        verify(auditRecorder).record("AUTHENTICATION_FAILED", authentication, "FAILURE");
     }
 }

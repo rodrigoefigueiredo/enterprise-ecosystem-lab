@@ -10,19 +10,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthenticationAuditListener implements ApplicationListener<AbstractAuthenticationEvent> {
 
-    private final AuthenticationAuditService auditService;
+    private final AuthenticationAuditRecorder auditRecorder;
 
     @Autowired
-    public AuthenticationAuditListener(AuthenticationAuditService auditService) {
-        this.auditService = auditService;
+    public AuthenticationAuditListener(AuthenticationAuditRecorder auditRecorder) {
+        this.auditRecorder = auditRecorder;
     }
 
     public void onApplicationEvent(AbstractAuthenticationEvent event) {
         if (event instanceof AuthenticationSuccessEvent) {
-            auditService.record("AUTHENTICATION_SUCCEEDED", event.getAuthentication(), "SUCCESS");
-            auditService.record("SESSION_CREATED", event.getAuthentication(), "SUCCESS");
+            auditRecorder.record("AUTHENTICATION_SUCCEEDED", event.getAuthentication(), "SUCCESS");
+            auditRecorder.record("SESSION_CREATED", event.getAuthentication(), "SUCCESS");
         } else if (event instanceof AbstractAuthenticationFailureEvent) {
-            auditService.record("AUTHENTICATION_FAILED", event.getAuthentication(), "FAILURE");
+            auditRecorder.record("AUTHENTICATION_FAILED", event.getAuthentication(), "FAILURE");
         }
     }
 }
