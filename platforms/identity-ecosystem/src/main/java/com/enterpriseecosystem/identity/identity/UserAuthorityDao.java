@@ -14,6 +14,7 @@ public class UserAuthorityDao {
     private EntityManager entityManager;
 
     public void grant(User user, String authority) {
+        entityManager.flush();
         entityManager
                 .createNativeQuery("insert into user_authorities (user_id, authority) values (:userId, :authority)")
                 .setParameter("userId", user.getId())

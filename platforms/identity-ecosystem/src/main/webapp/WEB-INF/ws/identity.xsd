@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://enterpriseecosystem.com/identity/ws"
+           targetNamespace="http://enterpriseecosystem.com/identity/ws"
+           elementFormDefault="qualified">
+
+  <xs:element name="CreateUserRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="email" type="xs:string"/>
+        <xs:element name="displayName" type="xs:string"/>
+        <xs:element name="password" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="CreateUserResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="publicId" type="xs:string"/>
+        <xs:element name="email" type="xs:string"/>
+        <xs:element name="displayName" type="xs:string"/>
+        <xs:element name="status" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:sws="http://www.springframework.org/schema/web-services"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+           http://www.springframework.org/schema/web-services http://www.springframework.org/schema/web-services/web-services-2.0.xsd">
+
+  <context:component-scan base-package="com.enterpriseecosystem.identity.platform.soap"/>
+  <sws:annotation-driven/>
+
+  <bean id="identity" class="org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition">
+    <property name="portTypeName" value="IdentityPort"/>
+    <property name="locationUri" value="/ws"/>
+    <property name="targetNamespace" value="http://enterpriseecosystem.com/identity/ws"/>
+    <property name="schema" ref="identitySchema"/>
+  </bean>
+
+  <bean id="identitySchema" class="org.springframework.xml.xsd.SimpleXsdSchema">
+    <property name="xsd" value="/WEB-INF/ws/identity.xsd"/>
+  </bean>
+</beans>

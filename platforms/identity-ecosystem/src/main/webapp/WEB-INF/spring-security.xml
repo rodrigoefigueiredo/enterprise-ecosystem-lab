@@ -10,6 +10,7 @@
     <intercept-url pattern="/" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
     <intercept-url pattern="/index.jsp" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
     <intercept-url pattern="/login" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+    <intercept-url pattern="/ws/**" access="ROLE_ADMIN"/>
     <intercept-url pattern="/users/new" access="ROLE_ADMIN"/>
     <intercept-url pattern="/users" access="ROLE_ADMIN"/>
     <intercept-url pattern="/resources/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>

@@ -73,6 +73,22 @@ New users receive `ROLE_USER`.
 
 Users with `ROLE_USER` can sign in and access `/me`.
 
+## SOAP
+
+Initial SOAP endpoint:
+
+```text
+/ws
+```
+
+WSDL:
+
+```text
+/ws/identity.wsdl
+```
+
+The initial operation is `CreateUser`. It is protected with `ROLE_ADMIN` and reuses the same user creation use case as the web administration flow.
+
 ## Audit
 
 Current audited events include:
