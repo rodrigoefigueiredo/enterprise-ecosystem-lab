@@ -92,9 +92,10 @@ Initial operations:
 ```text
 CreateUser
 ChangeUserState
+GetCurrentUser
 ```
 
-SOAP administration operations are protected with `ROLE_ADMIN`. `ChangeUserState` accepts `ACTIVE`, `SUSPENDED`, `LOCKED`, and `INACTIVE`.
+SOAP administration operations are protected with `ROLE_ADMIN`. `ChangeUserState` accepts `ACTIVE`, `SUSPENDED`, `LOCKED`, and `INACTIVE`. `GetCurrentUser` returns the authenticated user's public ID, e-mail, display name, status, and authorities.
 
 ## Audit
 

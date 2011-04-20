@@ -43,6 +43,30 @@
     </xs:complexType>
   </xs:element>
 
+  <xs:element name="GetCurrentUserRequest">
+    <xs:complexType>
+      <xs:sequence/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetCurrentUserResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="publicId" type="xs:string"/>
+        <xs:element name="email" type="xs:string"/>
+        <xs:element name="displayName" type="xs:string"/>
+        <xs:element name="status" type="tns:UserStatus"/>
+        <xs:element name="authorities" type="tns:Authorities"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="Authorities">
+    <xs:sequence>
+      <xs:element name="authority" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:simpleType name="UserStatus">
     <xs:restriction base="xs:string">
       <xs:enumeration value="ACTIVE"/>
