@@ -24,4 +24,31 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
+  <xs:element name="ChangeUserStateRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="publicId" type="xs:string"/>
+        <xs:element name="status" type="tns:UserStatus"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ChangeUserStateResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="publicId" type="xs:string"/>
+        <xs:element name="status" type="tns:UserStatus"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name="UserStatus">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ACTIVE"/>
+      <xs:enumeration value="SUSPENDED"/>
+      <xs:enumeration value="LOCKED"/>
+      <xs:enumeration value="INACTIVE"/>
+    </xs:restriction>
+  </xs:simpleType>
 </xs:schema>

@@ -34,4 +34,15 @@ public class UserDao {
             return null;
         }
     }
+
+    public User findByPublicId(String publicId) {
+        try {
+            return (User) entityManager
+                    .createQuery("select u from User u where u.publicId = :publicId")
+                    .setParameter("publicId", publicId)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
 }

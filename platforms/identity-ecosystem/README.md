@@ -87,7 +87,14 @@ WSDL:
 /ws/identity.wsdl
 ```
 
-The initial operation is `CreateUser`. It is protected with `ROLE_ADMIN` and reuses the same user creation use case as the web administration flow.
+Initial operations:
+
+```text
+CreateUser
+ChangeUserState
+```
+
+SOAP administration operations are protected with `ROLE_ADMIN`. `ChangeUserState` accepts `ACTIVE`, `SUSPENDED`, `LOCKED`, and `INACTIVE`.
 
 ## Audit
 
@@ -95,6 +102,7 @@ Current audited events include:
 
 ```text
 USER_CREATED
+USER_STATE_CHANGED
 ADMIN_BOOTSTRAPPED
 AUTHENTICATION_SUCCEEDED
 AUTHENTICATION_FAILED
