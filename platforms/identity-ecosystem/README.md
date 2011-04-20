@@ -63,6 +63,7 @@ Deploy `target/identity-ecosystem.war` to Tomcat 7.
 ```text
 /login
 /me
+/users
 /users/new
 /logout
 ```

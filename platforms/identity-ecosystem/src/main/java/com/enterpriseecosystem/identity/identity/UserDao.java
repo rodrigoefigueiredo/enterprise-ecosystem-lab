@@ -1,5 +1,7 @@
 package com.enterpriseecosystem.identity.identity;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.NoResultException;
@@ -44,5 +46,11 @@ public class UserDao {
         } catch (NoResultException e) {
             return null;
         }
+    }
+
+    public List<User> findAllOrderByCreatedAtDesc() {
+        return entityManager
+                .createQuery("select u from User u order by u.createdAt desc")
+                .getResultList();
     }
 }

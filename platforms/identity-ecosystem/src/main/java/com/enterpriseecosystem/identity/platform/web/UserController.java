@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.enterpriseecosystem.identity.identity.CreateUserRequest;
 import com.enterpriseecosystem.identity.identity.CreateUserUseCase;
 import com.enterpriseecosystem.identity.identity.DuplicateEmailException;
+import com.enterpriseecosystem.identity.identity.ListUsersUseCase;
 
 @Controller
 public class UserController {
@@ -21,10 +22,18 @@ public class UserController {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
 
     private final CreateUserUseCase createUserUseCase;
+    private final ListUsersUseCase listUsersUseCase;
 
     @Autowired
-    public UserController(CreateUserUseCase createUserUseCase) {
+    public UserController(CreateUserUseCase createUserUseCase, ListUsersUseCase listUsersUseCase) {
         this.createUserUseCase = createUserUseCase;
+        this.listUsersUseCase = listUsersUseCase;
+    }
+
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
+    public String list(Model model) {
+        model.addAttribute("users", listUsersUseCase.listUsers());
+        return "users/index";
     }
 
     @RequestMapping(value = "/users/new", method = RequestMethod.GET)

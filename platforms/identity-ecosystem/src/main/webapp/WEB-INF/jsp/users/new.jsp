@@ -44,6 +44,10 @@
     </p>
   </form:form>
 
-  <p><a href="${pageContext.request.contextPath}/">Home</a></p>
+  <p>
+    <a href="${pageContext.request.contextPath}/users">Users</a>
+    |
+    <a href="${pageContext.request.contextPath}/">Home</a>
+  </p>
 </body>
 </html>
