@@ -20,6 +20,18 @@ The application is packaged as:
 identity-ecosystem.war
 ```
 
+## Phase 1 Scope
+
+Phase 1 delivers a minimal enterprise IAM foundation:
+
+- persisted users, password credentials, authorities, and audit events;
+- first administrator bootstrap;
+- database-backed login and logout;
+- administrative web user creation, listing, and state changes;
+- authenticated user home page;
+- initial SOAP contract and endpoints;
+- automated unit and integration test coverage for the initial user lifecycle.
+
 ## Configuration
 
 Required environment properties:
@@ -48,6 +60,15 @@ mvn clean package
 ```
 
 Deploy `target/identity-ecosystem.war` to Tomcat 7.
+
+## Integration Tests
+
+Integration tests require a PostgreSQL 9 database configured with the required
+environment properties.
+
+```text
+mvn -Pintegration-test test
+```
 
 ## First Administrator
 
