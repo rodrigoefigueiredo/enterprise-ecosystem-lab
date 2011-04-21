@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.enterpriseecosystem.identity.identity.CreateUserRequest;
 import com.enterpriseecosystem.identity.identity.CreateUserUseCase;
+import com.enterpriseecosystem.identity.identity.ChangeUserStateRequest;
+import com.enterpriseecosystem.identity.identity.ChangeUserStateUseCase;
 import com.enterpriseecosystem.identity.identity.DuplicateEmailException;
+import com.enterpriseecosystem.identity.identity.InvalidUserStateChangeException;
 import com.enterpriseecosystem.identity.identity.ListUsersUseCase;
+import com.enterpriseecosystem.identity.identity.UserNotFoundException;
 
 @Controller
 public class UserController {
@@ -23,11 +27,15 @@ public class UserController {
 
     private final CreateUserUseCase createUserUseCase;
     private final ListUsersUseCase listUsersUseCase;
+    private final ChangeUserStateUseCase changeUserStateUseCase;
 
     @Autowired
-    public UserController(CreateUserUseCase createUserUseCase, ListUsersUseCase listUsersUseCase) {
+    public UserController(CreateUserUseCase createUserUseCase,
+                          ListUsersUseCase listUsersUseCase,
+                          ChangeUserStateUseCase changeUserStateUseCase) {
         this.createUserUseCase = createUserUseCase;
         this.listUsersUseCase = listUsersUseCase;
+        this.changeUserStateUseCase = changeUserStateUseCase;
     }
 
     @RequestMapping(value = "/users", method = RequestMethod.GET)
@@ -59,6 +67,18 @@ public class UserController {
         } catch (DuplicateEmailException e) {
             bindingResult.rejectValue("email", "email.duplicate", "E-mail is already registered.");
             return "users/new";
+        }
+    }
+
+    @RequestMapping(value = "/users/state", method = RequestMethod.POST)
+    public String changeState(@ModelAttribute("changeUserStateForm") ChangeUserStateForm form) {
+        try {
+            changeUserStateUseCase.changeState(new ChangeUserStateRequest(form.getPublicId(), form.getStatus()));
+            return "redirect:/users?stateChanged=true";
+        } catch (InvalidUserStateChangeException e) {
+            return "redirect:/users?stateChangeError=true";
+        } catch (UserNotFoundException e) {
+            return "redirect:/users?stateChangeError=true";
         }
     }
 

@@ -68,7 +68,7 @@ Deploy `target/identity-ecosystem.war` to Tomcat 7.
 /logout
 ```
 
-Only users with `ROLE_ADMIN` can access `/users/new` and create users.
+Only users with `ROLE_ADMIN` can access `/users`, create users, and change user state.
 
 New users receive `ROLE_USER`.
 
