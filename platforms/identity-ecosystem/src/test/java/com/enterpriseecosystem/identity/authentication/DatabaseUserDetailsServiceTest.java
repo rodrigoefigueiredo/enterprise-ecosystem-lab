@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.Test;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -44,8 +47,48 @@ public class DatabaseUserDetailsServiceTest {
 
         assertThat(details.getUsername(), is("admin@example.com"));
         assertThat(details.getPassword(), is("stored-hash"));
+        assertThat(details.isEnabled(), is(true));
         assertThat(hasAuthority(details.getAuthorities(), "ROLE_ADMIN"), is(true));
         assertThat(hasAuthority(details.getAuthorities(), "ROLE_USER"), is(true));
+    }
+
+    @Test
+    public void disablesSuspendedUser() {
+        assertDisabledForStatus("SUSPENDED");
+    }
+
+    @Test
+    public void disablesLockedUser() {
+        assertDisabledForStatus("LOCKED");
+    }
+
+    @Test
+    public void disablesInactiveUser() {
+        assertDisabledForStatus("INACTIVE");
+    }
+
+    @Test(expected = DisabledException.class)
+    public void rejectsDisabledUserDuringAuthentication() {
+        User user = new User();
+        user.setPublicId("public-id");
+        user.setEmail("user@example.com");
+        user.setStatus("SUSPENDED");
+
+        PasswordCredential credential = new PasswordCredential();
+        credential.setPasswordHash("stored-hash");
+
+        UserDao userDao = mock(UserDao.class);
+        PasswordCredentialDao credentialDao = mock(PasswordCredentialDao.class);
+        UserAuthorityDao authorityDao = mock(UserAuthorityDao.class);
+        when(userDao.findByEmail("user@example.com")).thenReturn(user);
+        when(credentialDao.findActiveByUserId(null)).thenReturn(credential);
+        when(authorityDao.findByUserId(null)).thenReturn(Arrays.asList("ROLE_USER"));
+
+        DatabaseUserDetailsService service = new DatabaseUserDetailsService(userDao, credentialDao, authorityDao);
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(service);
+
+        provider.authenticate(new UsernamePasswordAuthenticationToken("user@example.com", "password"));
     }
 
     @Test(expected = UsernameNotFoundException.class)
@@ -67,6 +110,29 @@ public class DatabaseUserDetailsServiceTest {
         DatabaseUserDetailsService service = new DatabaseUserDetailsService(userDao, credentialDao, authorityDao);
 
         service.loadUserByUsername("user@example.com");
+    }
+
+    private void assertDisabledForStatus(String status) {
+        User user = new User();
+        user.setPublicId("public-id");
+        user.setEmail("user@example.com");
+        user.setStatus(status);
+
+        PasswordCredential credential = new PasswordCredential();
+        credential.setPasswordHash("stored-hash");
+
+        UserDao userDao = mock(UserDao.class);
+        PasswordCredentialDao credentialDao = mock(PasswordCredentialDao.class);
+        UserAuthorityDao authorityDao = mock(UserAuthorityDao.class);
+        when(userDao.findByEmail("user@example.com")).thenReturn(user);
+        when(credentialDao.findActiveByUserId(null)).thenReturn(credential);
+        when(authorityDao.findByUserId(null)).thenReturn(Arrays.asList("ROLE_USER"));
+
+        DatabaseUserDetailsService service = new DatabaseUserDetailsService(userDao, credentialDao, authorityDao);
+
+        UserDetails details = service.loadUserByUsername("user@example.com");
+
+        assertThat(details.isEnabled(), is(false));
     }
 
     private boolean hasAuthority(Collection<GrantedAuthority> authorities, String authority) {
