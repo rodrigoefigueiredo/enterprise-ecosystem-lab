@@ -10,6 +10,7 @@ import com.enterpriseecosystem.identity.identity.ChangeUserStateRequest;
 import com.enterpriseecosystem.identity.identity.ChangeUserStateUseCase;
 import com.enterpriseecosystem.identity.identity.InvalidUserStateChangeException;
 import com.enterpriseecosystem.identity.identity.ListUsersUseCase;
+import com.enterpriseecosystem.identity.credential.PasswordPolicy;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -25,7 +26,8 @@ public class UserControllerTest {
         UserController controller = new UserController(
                 mock(CreateUserUseCase.class),
                 listUsersUseCase,
-                mock(ChangeUserStateUseCase.class));
+                mock(ChangeUserStateUseCase.class),
+                new PasswordPolicy());
         ExtendedModelMap model = new ExtendedModelMap();
 
         String viewName = controller.list(model);
@@ -59,12 +61,51 @@ public class UserControllerTest {
     }
 
     @Test
+    public void shortPasswordReturnsFormViewWithPasswordError() {
+        UserController controller = newController();
+        CreateUserForm form = new CreateUserForm();
+        form.setEmail("alice@example.com");
+        form.setDisplayName("Alice");
+        form.setPassword("12345678901");
+        form.setConfirmPassword("12345678901");
+        BindingResult bindingResult = new BeanPropertyBindingResult(form, "createUserForm");
+
+        String viewName = controller.create(form, bindingResult, new ExtendedModelMap());
+
+        assertThat(viewName, is("users/new"));
+        assertThat(bindingResult.hasFieldErrors("password"), is(true));
+    }
+
+    @Test
+    public void passwordWithMinimumLengthPassesValidation() {
+        CreateUserUseCase createUserUseCase = mock(CreateUserUseCase.class);
+        UserController controller = new UserController(
+                createUserUseCase,
+                mock(ListUsersUseCase.class),
+                mock(ChangeUserStateUseCase.class),
+                new PasswordPolicy());
+        CreateUserForm form = new CreateUserForm();
+        form.setEmail("alice@example.com");
+        form.setDisplayName("Alice");
+        form.setPassword("123456789012");
+        form.setConfirmPassword("123456789012");
+        BindingResult bindingResult = new BeanPropertyBindingResult(form, "createUserForm");
+
+        String viewName = controller.create(form, bindingResult, new ExtendedModelMap());
+
+        assertThat(viewName, is("users/new"));
+        assertThat(bindingResult.hasErrors(), is(false));
+        verify(createUserUseCase).create(org.mockito.Matchers.any(com.enterpriseecosystem.identity.identity.CreateUserRequest.class));
+    }
+
+    @Test
     public void changeStateRedirectsToUsersAfterSuccess() {
         ChangeUserStateUseCase changeUserStateUseCase = mock(ChangeUserStateUseCase.class);
         UserController controller = new UserController(
                 mock(CreateUserUseCase.class),
                 mock(ListUsersUseCase.class),
-                changeUserStateUseCase);
+                changeUserStateUseCase,
+                new PasswordPolicy());
         ChangeUserStateForm form = new ChangeUserStateForm();
         form.setPublicId("public-id-1");
         form.setStatus("LOCKED");
@@ -84,7 +125,8 @@ public class UserControllerTest {
         UserController controller = new UserController(
                 mock(CreateUserUseCase.class),
                 mock(ListUsersUseCase.class),
-                changeUserStateUseCase);
+                changeUserStateUseCase,
+                new PasswordPolicy());
         ChangeUserStateForm form = new ChangeUserStateForm();
         form.setPublicId("public-id-1");
         form.setStatus("DISABLED");
@@ -98,6 +140,7 @@ public class UserControllerTest {
         return new UserController(
                 mock(CreateUserUseCase.class),
                 mock(ListUsersUseCase.class),
-                mock(ChangeUserStateUseCase.class));
+                mock(ChangeUserStateUseCase.class),
+                new PasswordPolicy());
     }
 }

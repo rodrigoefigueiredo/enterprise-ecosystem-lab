@@ -18,24 +18,27 @@ import com.enterpriseecosystem.identity.identity.DuplicateEmailException;
 import com.enterpriseecosystem.identity.identity.InvalidUserStateChangeException;
 import com.enterpriseecosystem.identity.identity.ListUsersUseCase;
 import com.enterpriseecosystem.identity.identity.UserNotFoundException;
+import com.enterpriseecosystem.identity.credential.PasswordPolicy;
 
 @Controller
 public class UserController {
 
-    private static final int MINIMUM_PASSWORD_LENGTH = 8;
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
 
     private final CreateUserUseCase createUserUseCase;
     private final ListUsersUseCase listUsersUseCase;
     private final ChangeUserStateUseCase changeUserStateUseCase;
+    private final PasswordPolicy passwordPolicy;
 
     @Autowired
     public UserController(CreateUserUseCase createUserUseCase,
                           ListUsersUseCase listUsersUseCase,
-                          ChangeUserStateUseCase changeUserStateUseCase) {
+                          ChangeUserStateUseCase changeUserStateUseCase,
+                          PasswordPolicy passwordPolicy) {
         this.createUserUseCase = createUserUseCase;
         this.listUsersUseCase = listUsersUseCase;
         this.changeUserStateUseCase = changeUserStateUseCase;
+        this.passwordPolicy = passwordPolicy;
     }
 
     @RequestMapping(value = "/users", method = RequestMethod.GET)
@@ -95,8 +98,8 @@ public class UserController {
 
         if (isBlank(form.getPassword())) {
             bindingResult.rejectValue("password", "password.required", "Password is required.");
-        } else if (form.getPassword().length() < MINIMUM_PASSWORD_LENGTH) {
-            bindingResult.rejectValue("password", "password.tooShort", "Password must have at least 8 characters.");
+        } else if (!passwordPolicy.accepts(form.getPassword())) {
+            bindingResult.rejectValue("password", "password.tooShort", "Password must have at least 12 characters.");
         }
 
         if (isBlank(form.getConfirmPassword())) {
