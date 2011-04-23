@@ -5,6 +5,8 @@ import org.junit.Test;
 import com.enterpriseecosystem.identity.audit.AuditEventDao;
 import com.enterpriseecosystem.identity.credential.PasswordCredentialDao;
 import com.enterpriseecosystem.identity.credential.PasswordHasher;
+import com.enterpriseecosystem.identity.credential.PasswordPolicy;
+import com.enterpriseecosystem.identity.credential.InvalidPasswordException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -22,7 +24,7 @@ public class CreateUserServiceTest {
         AuditEventDao auditEventDao = mock(AuditEventDao.class);
         PasswordHasher passwordHasher = mock(PasswordHasher.class);
         when(userDao.emailExists("alice@example.com")).thenReturn(false);
-        when(passwordHasher.hash("changeit123")).thenReturn("hashed-password");
+        when(passwordHasher.hash("changeit1234")).thenReturn("hashed-password");
         when(passwordHasher.algorithm()).thenReturn("PBKDF2WithHmacSHA1");
 
         CreateUserService service = new CreateUserService(
@@ -30,9 +32,10 @@ public class CreateUserServiceTest {
                 credentialDao,
                 userAuthorityDao,
                 auditEventDao,
-                passwordHasher);
+                passwordHasher,
+                new PasswordPolicy());
 
-        User user = service.create(new CreateUserRequest(" Alice@Example.com ", "Alice", "changeit123"));
+        User user = service.create(new CreateUserRequest(" Alice@Example.com ", "Alice", "changeit1234"));
 
         assertThat(user.getEmail(), is("alice@example.com"));
         assertThat(user.getDisplayName(), is("Alice"));
@@ -51,7 +54,24 @@ public class CreateUserServiceTest {
                 mock(PasswordCredentialDao.class),
                 mock(UserAuthorityDao.class),
                 mock(AuditEventDao.class),
-                mock(PasswordHasher.class));
+                mock(PasswordHasher.class),
+                new PasswordPolicy());
+
+        service.create(new CreateUserRequest("alice@example.com", "Alice", "changeit1234"));
+    }
+
+    @Test(expected = InvalidPasswordException.class)
+    public void rejectsPasswordShorterThanPolicy() {
+        UserDao userDao = mock(UserDao.class);
+        when(userDao.emailExists("alice@example.com")).thenReturn(false);
+
+        CreateUserService service = new CreateUserService(
+                userDao,
+                mock(PasswordCredentialDao.class),
+                mock(UserAuthorityDao.class),
+                mock(AuditEventDao.class),
+                mock(PasswordHasher.class),
+                new PasswordPolicy());
 
         service.create(new CreateUserRequest("alice@example.com", "Alice", "changeit123"));
     }

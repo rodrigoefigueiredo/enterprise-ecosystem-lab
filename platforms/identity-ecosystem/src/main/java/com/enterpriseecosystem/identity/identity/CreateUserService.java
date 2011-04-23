@@ -13,6 +13,8 @@ import com.enterpriseecosystem.identity.audit.AuditEventDao;
 import com.enterpriseecosystem.identity.credential.PasswordCredential;
 import com.enterpriseecosystem.identity.credential.PasswordCredentialDao;
 import com.enterpriseecosystem.identity.credential.PasswordHasher;
+import com.enterpriseecosystem.identity.credential.PasswordPolicy;
+import com.enterpriseecosystem.identity.credential.InvalidPasswordException;
 
 @Service
 public class CreateUserService implements CreateUserUseCase {
@@ -22,22 +24,29 @@ public class CreateUserService implements CreateUserUseCase {
     private final UserAuthorityDao userAuthorityDao;
     private final AuditEventDao auditEventDao;
     private final PasswordHasher passwordHasher;
+    private final PasswordPolicy passwordPolicy;
 
     @Autowired
     public CreateUserService(UserDao userDao,
                              PasswordCredentialDao passwordCredentialDao,
                              UserAuthorityDao userAuthorityDao,
                              AuditEventDao auditEventDao,
-                             PasswordHasher passwordHasher) {
+                             PasswordHasher passwordHasher,
+                             PasswordPolicy passwordPolicy) {
         this.userDao = userDao;
         this.passwordCredentialDao = passwordCredentialDao;
         this.userAuthorityDao = userAuthorityDao;
         this.auditEventDao = auditEventDao;
         this.passwordHasher = passwordHasher;
+        this.passwordPolicy = passwordPolicy;
     }
 
     @Transactional
     public User create(CreateUserRequest request) {
+        if (!passwordPolicy.accepts(request.getPassword())) {
+            throw new InvalidPasswordException();
+        }
+
         String email = normalizeEmail(request.getEmail());
         if (userDao.emailExists(email)) {
             throw new DuplicateEmailException(email);
