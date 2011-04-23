@@ -17,11 +17,10 @@ import com.enterpriseecosystem.identity.audit.AuditEventDao;
 import com.enterpriseecosystem.identity.credential.PasswordCredential;
 import com.enterpriseecosystem.identity.credential.PasswordCredentialDao;
 import com.enterpriseecosystem.identity.credential.PasswordHasher;
+import com.enterpriseecosystem.identity.credential.PasswordPolicy;
 
 @Service
 public class BootstrapAdminService implements InitializingBean {
-
-    private static final int MINIMUM_BOOTSTRAP_PASSWORD_LENGTH = 12;
 
     private final BootstrapAdminSettings settings;
     private final UserDao userDao;
@@ -29,6 +28,7 @@ public class BootstrapAdminService implements InitializingBean {
     private final UserAuthorityDao userAuthorityDao;
     private final AuditEventDao auditEventDao;
     private final PasswordHasher passwordHasher;
+    private final PasswordPolicy passwordPolicy;
     private final TransactionTemplate transactionTemplate;
 
     @Autowired
@@ -38,6 +38,7 @@ public class BootstrapAdminService implements InitializingBean {
                                  UserAuthorityDao userAuthorityDao,
                                  AuditEventDao auditEventDao,
                                  PasswordHasher passwordHasher,
+                                 PasswordPolicy passwordPolicy,
                                  PlatformTransactionManager transactionManager) {
         this.settings = settings;
         this.userDao = userDao;
@@ -45,6 +46,7 @@ public class BootstrapAdminService implements InitializingBean {
         this.userAuthorityDao = userAuthorityDao;
         this.auditEventDao = auditEventDao;
         this.passwordHasher = passwordHasher;
+        this.passwordPolicy = passwordPolicy;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
@@ -63,7 +65,7 @@ public class BootstrapAdminService implements InitializingBean {
         if (email == null || password == null || displayName == null) {
             throw new IllegalStateException("Bootstrap admin requires e-mail, password, and display name.");
         }
-        if (password.length() < MINIMUM_BOOTSTRAP_PASSWORD_LENGTH) {
+        if (!passwordPolicy.accepts(password)) {
             throw new IllegalStateException("Bootstrap admin password must contain at least 12 characters.");
         }
 

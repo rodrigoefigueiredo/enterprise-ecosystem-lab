@@ -10,6 +10,7 @@ import com.enterpriseecosystem.identity.audit.AuditEvent;
 import com.enterpriseecosystem.identity.audit.AuditEventDao;
 import com.enterpriseecosystem.identity.credential.PasswordCredentialDao;
 import com.enterpriseecosystem.identity.credential.PasswordHasher;
+import com.enterpriseecosystem.identity.credential.PasswordPolicy;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -62,6 +63,7 @@ public class BootstrapAdminServiceTest {
                 authorityDao,
                 auditEventDao,
                 passwordHasher,
+                new PasswordPolicy(),
                 new TestTransactionManager());
 
         service.bootstrapIfConfigured();
@@ -97,6 +99,7 @@ public class BootstrapAdminServiceTest {
                 authorityDao,
                 mock(AuditEventDao.class),
                 mock(PasswordHasher.class),
+                new PasswordPolicy(),
                 new TestTransactionManager());
     }
 
