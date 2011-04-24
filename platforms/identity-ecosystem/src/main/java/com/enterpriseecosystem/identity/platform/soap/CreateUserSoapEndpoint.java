@@ -18,20 +18,22 @@ import com.enterpriseecosystem.identity.identity.CreateUserRequest;
 import com.enterpriseecosystem.identity.identity.CreateUserUseCase;
 import com.enterpriseecosystem.identity.identity.DuplicateEmailException;
 import com.enterpriseecosystem.identity.identity.User;
+import com.enterpriseecosystem.identity.credential.PasswordPolicy;
 
 @Endpoint
 public class CreateUserSoapEndpoint {
 
     static final String NAMESPACE_URI = "http://enterpriseecosystem.com/identity/ws";
 
-    private static final int MINIMUM_PASSWORD_LENGTH = 8;
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
 
     private final CreateUserUseCase createUserUseCase;
+    private final PasswordPolicy passwordPolicy;
 
     @Autowired
-    public CreateUserSoapEndpoint(CreateUserUseCase createUserUseCase) {
+    public CreateUserSoapEndpoint(CreateUserUseCase createUserUseCase, PasswordPolicy passwordPolicy) {
         this.createUserUseCase = createUserUseCase;
+        this.passwordPolicy = passwordPolicy;
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "CreateUserRequest")
@@ -58,7 +60,7 @@ public class CreateUserSoapEndpoint {
         if (isBlank(displayName)) {
             throw new CreateUserSoapException("User could not be created.");
         }
-        if (isBlank(password) || password.length() < MINIMUM_PASSWORD_LENGTH) {
+        if (isBlank(password) || !passwordPolicy.accepts(password)) {
             throw new CreateUserSoapException("User could not be created.");
         }
     }
